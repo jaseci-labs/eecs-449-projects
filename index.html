@@ -194,44 +194,96 @@
       border: 5px solid transparent; border-top-color: #111827;
     }
     .avatar:hover .avatar-tip { opacity: 1; }
-    .yt-thumb, .video-wrap, .video-placeholder {
+    /* ── VIDEO THUMBNAILS ── */
+    .video-wrap {
       position: relative; width: 100%; padding-top: 56.25%;
       border-top: 1px solid var(--border); overflow: hidden;
-      background: #000;
     }
-    .yt-thumb img {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      opacity: .9; transition: opacity .2s;
-    }
-    .yt-thumb:hover img { opacity: .75; }
-    .yt-play {
+    .video-wrap > * {
       position: absolute; inset: 0;
+    }
+    .vthumb-img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .3s;
+    }
+    .vthumb-overlay {
       display: flex; align-items: center; justify-content: center;
-      pointer-events: none;
+      background: rgba(0,0,0,.08);
+      transition: background .2s;
     }
-    .video-wrap iframe {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      border: none;
-    }
-    .video-placeholder {
-      background: #f8f9fb;
-    }
-    .video-placeholder > * {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      color: #9ca3af;
-    }
-    .video-placeholder svg { width: 36px; height: 36px; opacity: .4; }
-    .video-placeholder span { font-size: .8rem; font-weight: 500; white-space: nowrap; }
-    .video-placeholder {
+    .vthumb-overlay svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); transition: transform .2s; }
+    .video-clickable { cursor: pointer; }
+    .video-clickable:hover .vthumb-img { transform: scale(1.03); }
+    .video-clickable:hover .vthumb-overlay { background: rgba(0,0,0,.28); }
+    .video-clickable:hover .vthumb-overlay svg { transform: scale(1.12); }
+    .drive-bg {
+      background: #0f172a;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 10px; padding: 28px 16px;
-      background: #f8f9fb; border-top: 1px solid var(--border);
+      gap: 10px; transition: background .2s;
+    }
+    .video-clickable:hover .drive-bg { background: #1e293b; }
+    .drive-label { font-size: .8rem; color: rgba(255,255,255,.5); font-weight: 500; }
+    .video-placeholder { background: #f0f2f5; }
+    .placeholder-inner {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
       color: #9ca3af;
     }
-    .video-placeholder svg { width: 36px; height: 36px; opacity: .4; }
-    .video-placeholder span { font-size: .8rem; font-weight: 500; }
+    .placeholder-inner svg { width: 34px; height: 34px; opacity: .3; }
+    .placeholder-inner span { font-size: .8rem; font-weight: 500; }
+
+    /* ── VIDEO MODAL ── */
+    #vid-modal {
+      position: fixed; inset: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #vid-modal[hidden] { display: none !important; }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(3px);
+    }
+    .modal-box {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 920px;
+      background: #000; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 32px 96px rgba(0,0,0,.7);
+      animation: modalIn .22s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes modalIn { from { opacity:0; transform:scale(.93); } to { opacity:1; transform:scale(1); } }
+    .modal-close {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      width: 34px; height: 34px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,.15); color: #fff;
+      font-size: 1.1rem; cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.3); }
+    .modal-frame {
+      position: relative; width: 100%; padding-top: 56.25%;
+    }
+    .modal-frame iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+    }
+    .modal-fallback {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; background: #111; color: rgba(255,255,255,.7);
+      text-align: center; padding: 32px;
+    }
+    .modal-fallback[hidden] { display: none; }
+    .modal-fallback svg { opacity: .4; }
+    .modal-fallback p { font-size: .95rem; line-height: 1.5; max-width: 320px; }
+    .modal-fallback .fb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 8px;
+      background: #ff0000; color: #fff;
+      font-size: .88rem; font-weight: 700; font-family: inherit;
+      text-decoration: none; transition: filter .15s;
+    }
+    .modal-fallback .fb-btn:hover { filter: brightness(1.15); }
     .card-foot {
       padding: 12px 22px 18px;
       border-top: 1px solid var(--border);
@@ -327,6 +379,8 @@
 <script>
 const GH   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 12 6.8c1.02.01 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>`;
 const LIVE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const PLAY_CIRCLE = `<svg viewBox="0 0 80 80" width="56" height="56" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="38" fill="rgba(0,0,0,.55)" stroke="rgba(255,255,255,.8)" stroke-width="2.5"/><polygon points="32,24 58,40 32,56" fill="white"/></svg>`;
+const FILM_ICON   = `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 7h5M17 17h5"/></svg>`;
 
 function youtubeId(url) {
   const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
@@ -334,8 +388,13 @@ function youtubeId(url) {
 }
 
 function driveEmbedUrl(url) {
-  const m = url.match(/\/d\/([^/]+)/);
+  const m = url.match(/\/d\/([^/?]+)/);
   return m ? `https://drive.google.com/file/d/${m[1]}/preview` : null;
+}
+
+function driveThumbnailUrl(url) {
+  const m = url.match(/\/d\/([^/?]+)/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w640` : null;
 }
 
 const PROJECTS = [
@@ -477,23 +536,23 @@ const PROJECTS = [
   },
 ];
 
+const PLACEHOLDER_VIDEO = `<div class="video-wrap video-placeholder"><div class="placeholder-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+
 function makeCard(p, i) {
   let videoSection;
   if (!p.demo) {
-    videoSection = `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+    videoSection = PLACEHOLDER_VIDEO;
   } else if (p.demo.type === 'youtube') {
     const vid = youtubeId(p.demo.url);
     videoSection = vid
-      ? `<a href="${p.demo.url}" target="_blank" rel="noopener" class="yt-thumb">
-           <img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Demo video thumbnail" loading="lazy">
-           <span class="yt-play"><svg viewBox="0 0 24 24" fill="white" width="48" height="48"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/><path d="M10 8l6 4-6 4V8z"/></svg></span>
-         </a>`
-      : `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+      ? `<div class="video-wrap video-clickable" data-modal-src="https://www.youtube.com/embed/${vid}?autoplay=1&rel=0&enablejsapi=1" data-modal-url="${p.demo.url}" title="Watch demo"><img class="vthumb-img" src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Demo video thumbnail" loading="lazy"><div class="vthumb-overlay">${PLAY_CIRCLE}</div></div>`
+      : PLACEHOLDER_VIDEO;
   } else {
     const embedSrc = driveEmbedUrl(p.demo.url);
+    const thumbSrc = driveThumbnailUrl(p.demo.url);
     videoSection = embedSrc
-      ? `<div class="video-wrap"><iframe src="${embedSrc}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
-      : `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+      ? `<div class="video-wrap video-clickable" data-modal-src="${embedSrc}" title="Watch demo"><img class="vthumb-img" src="${thumbSrc}" alt="Demo video thumbnail" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="drive-bg" style="display:none">${FILM_ICON}<span class="drive-label">Click to watch demo</span></div><div class="vthumb-overlay">${PLAY_CIRCLE}</div></div>`
+      : PLACEHOLDER_VIDEO;
   }
   return `
   <div class="card" style="animation-delay:${i * 40}ms">
@@ -529,6 +588,78 @@ function render() {
     ? list.map((p, i) => makeCard(p, i)).join('')
     : `<div class="empty"><div class="empty-icon">🔍</div><h3>No projects found</h3><p>Try a different search term.</p></div>`;
 }
+
+// ── VIDEO MODAL ──
+const YT_ICON = `<svg width="48" height="48" viewBox="0 0 24 24" fill="white"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>`;
+
+const modal     = document.createElement('div');
+modal.id        = 'vid-modal';
+modal.hidden    = true;
+modal.innerHTML = `<div class="modal-backdrop"></div><div class="modal-box"><button class="modal-close" aria-label="Close">✕</button><div class="modal-frame"><iframe id="modal-iframe" allowfullscreen frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe><div class="modal-fallback" hidden>${YT_ICON}<p>The video owner has disabled embedding.<br>Watch it directly on YouTube instead.</p><a class="fb-btn" id="modal-yt-link" target="_blank" rel="noopener">Watch on YouTube ↗</a></div></div></div>`;
+document.body.appendChild(modal);
+
+const modalIframe   = modal.querySelector('#modal-iframe');
+const modalFallback = modal.querySelector('.modal-fallback');
+const modalYtLink   = modal.querySelector('#modal-yt-link');
+let   currentYtUrl  = '';
+let   embedTimeout  = null;
+
+function showFallback() {
+  modalIframe.style.visibility = '';
+  modalIframe.style.display = 'none';
+  modalYtLink.href = currentYtUrl;
+  modalFallback.hidden = false;
+}
+
+function openModal(src, originalUrl) {
+  currentYtUrl = originalUrl || '';
+  clearTimeout(embedTimeout);
+  modalFallback.hidden = true;
+  // Hide iframe until onReady — prevents YouTube's error UI flashing
+  modalIframe.style.visibility = src.includes('youtube.com/embed') ? 'hidden' : '';
+  modalIframe.style.display = '';
+  modalIframe.src = src;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  clearTimeout(embedTimeout);
+  modal.hidden = true;
+  modalIframe.src = '';
+  document.body.style.overflow = '';
+}
+
+// After the iframe loads: send the listening handshake then start the timeout
+modalIframe.addEventListener('load', function() {
+  if (!modalIframe.src.includes('youtube.com/embed')) return;
+  modalIframe.contentWindow.postMessage(JSON.stringify({ event: 'listening' }), 'https://www.youtube.com');
+  clearTimeout(embedTimeout);
+  embedTimeout = setTimeout(showFallback, 7000);
+});
+
+window.addEventListener('message', function(e) {
+  if (e.source !== modalIframe.contentWindow) return;
+  try {
+    const data = JSON.parse(e.data);
+    if (data.event === 'onReady') {
+      clearTimeout(embedTimeout);
+      modalIframe.style.visibility = ''; // reveal now that it's playing
+    } else if (data.event === 'onError' && [100, 101, 150, 151, 153].includes(data.info)) {
+      clearTimeout(embedTimeout);
+      showFallback();
+    }
+  } catch(_) {}
+});
+
+modal.querySelector('.modal-close').addEventListener('click', closeModal);
+modal.querySelector('.modal-backdrop').addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+document.getElementById('grid').addEventListener('click', function(e) {
+  const thumb = e.target.closest('.video-clickable');
+  if (thumb && thumb.dataset.modalSrc) openModal(thumb.dataset.modalSrc, thumb.dataset.modalUrl);
+});
 
 document.getElementById('search').addEventListener('input', e => { srch = e.target.value.trim(); render(); });
 render();
