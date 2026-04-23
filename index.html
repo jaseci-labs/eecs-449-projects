@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EECS 449: Conversational AI Project Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maize: #FFCB05;
+      --blue: #00274C;
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --border: #e4e8ee;
+      --shadow-sm: 0 1px 4px rgba(0,39,76,.06);
+      --shadow: 0 4px 20px rgba(0,39,76,.09);
+      --shadow-lg: 0 16px 48px rgba(0,39,76,.18);
+      --r: 16px;
+      --bar: linear-gradient(90deg, var(--blue), #1d4e89, var(--maize));
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--blue);
+      position: sticky; top: 0; z-index: 200;
+      border-bottom: 2px solid rgba(255,203,5,.25);
+    }
+    .hdr {
+      max-width: 1320px; margin: 0 auto; padding: 13px 32px;
+      display: flex; align-items: center;
+    }
+    .hdr-logo {
+      font-size: 1.1rem; font-weight: 900; letter-spacing: -.3px;
+      background: linear-gradient(135deg, var(--maize), #fff5a0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hdr-sep { width: 1px; height: 18px; background: rgba(255,255,255,.2); margin: 0 16px; }
+    .hdr-title { font-size: .88rem; color: rgba(255,255,255,.65); font-weight: 500; }
+    .hdr-right { margin-left: auto; font-size: .78rem; color: rgba(255,255,255,.4); }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--blue);
+      padding: 88px 32px 80px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,203,5,.12) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 55% at 50% 0%, rgba(255,203,5,.15), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,203,5,.12);
+      border: 1px solid rgba(255,203,5,.35);
+      color: var(--maize);
+      padding: 6px 18px; border-radius: 100px;
+      font-size: .75rem; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; margin-bottom: 28px;
+    }
+    .pill-dot { width: 6px; height: 6px; background: var(--maize); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+    .hero h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 900; line-height: 1.05; letter-spacing: -2px; color: #fff;
+      margin-bottom: 20px;
+    }
+    .hero h1 .accent { color: var(--maize); text-shadow: 0 0 40px rgba(255,203,5,.4); }
+    .hero-sub { font-size: 1.1rem; color: rgba(255,255,255,.6); max-width: 540px; margin: 0 auto 48px; }
+    .hero-stats {
+      display: inline-flex;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px; overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .stat { padding: 18px 44px; text-align: center; border-right: 1px solid rgba(255,255,255,.1); }
+    .stat:last-child { border-right: none; }
+    .stat-n { display: block; font-size: 2.2rem; font-weight: 900; color: var(--maize); line-height: 1; letter-spacing: -1px; }
+    .stat-l { font-size: .72rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .8px; margin-top: 6px; }
+
+    /* ── SEARCH ── */
+    .search-row {
+      max-width: 1320px; margin: 36px auto 0;
+      padding: 0 32px;
+      display: flex; gap: 14px; align-items: center;
+    }
+    .sw { flex: 1; max-width: 480px; position: relative; }
+    .sw svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    #search {
+      width: 100%;
+      padding: 12px 18px 12px 46px;
+      border: 2px solid var(--border); border-radius: 100px;
+      font-size: .93rem; font-family: inherit;
+      background: var(--card); color: var(--text); outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    #search:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(0,39,76,.08); }
+    #search::placeholder { color: #9ca3af; }
+
+    /* ── GRID ── */
+    .gw { max-width: 1320px; margin: 0 auto; padding: 28px 32px 80px; }
+    .row-meta { margin-bottom: 22px; }
+    .cnt-txt { font-size: .88rem; color: var(--muted); }
+    .cnt-txt strong { color: var(--blue); font-weight: 700; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 22px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card); border-radius: var(--r);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex; flex-direction: column;
+      overflow: visible;
+      transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+      animation: fadeUp .4s both;
+    }
+    .card-bar { border-radius: var(--r) var(--r) 0 0; overflow: hidden; }
+    .card-foot { border-radius: 0 0 var(--r) var(--r); overflow: hidden; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .card:hover { transform: translateY(-5px) scale(1.005); box-shadow: var(--shadow-lg); }
+    .card-bar { height: 4px; background: var(--bar); }
+    .card-body { padding: 20px 22px 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .pname { font-size: 1.28rem; font-weight: 800; color: var(--blue); line-height: 1.15; letter-spacing: -.3px; }
+    .tname { font-size: .8rem; color: var(--muted); }
+    .tname b { color: var(--text); font-weight: 600; }
+    .desc {
+      font-size: .86rem; color: #4b5563; line-height: 1.7;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .members-label {
+      font-size: .7rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .6px; margin-top: 12px;
+    }
+    .members {
+      display: flex; flex-wrap: wrap; gap: 0; margin-top: 6px;
+    }
+    .avatar {
+      position: relative;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue); color: var(--maize);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 800; letter-spacing: .3px;
+      border: 2px solid var(--card);
+      margin-right: -6px;
+      cursor: default;
+      transition: transform .15s, z-index .15s;
+      z-index: 1;
+    }
+    .avatar:hover { transform: translateY(-3px) scale(1.15); z-index: 20; }
+    .avatar-tip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%);
+      background: #111827; color: #fff;
+      padding: 5px 10px; border-radius: 7px;
+      font-size: .72rem; white-space: nowrap; font-weight: 500;
+      pointer-events: none; opacity: 0;
+      transition: opacity .15s;
+      z-index: 100;
+    }
+    .avatar-tip::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #111827;
+    }
+    .avatar:hover .avatar-tip { opacity: 1; }
+    .yt-thumb, .video-wrap, .video-placeholder {
+      position: relative; width: 100%; padding-top: 56.25%;
+      border-top: 1px solid var(--border); overflow: hidden;
+      background: #000;
+    }
+    .yt-thumb img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      opacity: .9; transition: opacity .2s;
+    }
+    .yt-thumb:hover img { opacity: .75; }
+    .yt-play {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .video-wrap iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: none;
+    }
+    .video-placeholder {
+      background: #f8f9fb;
+    }
+    .video-placeholder > * {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: #9ca3af;
+    }
+    .video-placeholder svg { width: 36px; height: 36px; opacity: .4; }
+    .video-placeholder span { font-size: .8rem; font-weight: 500; white-space: nowrap; }
+    .video-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; padding: 28px 16px;
+      background: #f8f9fb; border-top: 1px solid var(--border);
+      color: #9ca3af;
+    }
+    .video-placeholder svg { width: 36px; height: 36px; opacity: .4; }
+    .video-placeholder span { font-size: .8rem; font-weight: 500; }
+    .card-foot {
+      padding: 12px 22px 18px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 7px; flex-wrap: wrap; align-items: center;
+      background: #fafbfd;
+      min-height: 58px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 13px; border-radius: 8px;
+      font-size: .77rem; font-weight: 600; font-family: inherit;
+      text-decoration: none;
+      transition: filter .15s, transform .15s;
+      white-space: nowrap;
+    }
+    .btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .b-gh   { background: #1b1f23; color: #fff; }
+    .b-live { background: var(--maize); color: var(--blue); font-weight: 700; }
+
+    /* ── EMPTY ── */
+    .empty { grid-column: 1/-1; text-align: center; padding: 72px 24px; color: var(--muted); }
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--blue); color: rgba(255,255,255,.5);
+      text-align: center; padding: 40px 32px; font-size: .85rem;
+    }
+    .footer-logo { font-size: 1.5rem; font-weight: 900; color: var(--maize); margin-bottom: 8px; letter-spacing: -1px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .hero { padding: 56px 20px 60px; }
+      .stat { padding: 14px 24px; }
+      .stat-n { font-size: 1.7rem; }
+      .grid { grid-template-columns: 1fr; }
+      .search-row { padding: 0 20px; }
+      .gw { padding: 24px 20px 60px; }
+      .hdr { padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <span class="hdr-logo">EECS 449</span>
+    <span class="hdr-sep"></span>
+    <span class="hdr-title">Conversational AI: Project Showcase</span>
+    <span class="hdr-right">University of Michigan</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="pill"><span class="pill-dot"></span>Winter 2026 &nbsp;·&nbsp; University of Michigan</div>
+    <h1>Student Project<br><span class="accent">Showcase</span></h1>
+    <p class="hero-sub">AI products designed and built by EECS 449 student teams at the University of Michigan during the Winter 2026 term.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-n">17</span><span class="stat-l">Projects</span></div>
+      <div class="stat"><span class="stat-n">75+</span><span class="stat-l">Students</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<div class="search-row">
+  <div class="sw">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input id="search" type="text" placeholder="Search projects or teams…" autocomplete="off" spellcheck="false">
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="gw">
+  <div class="row-meta">
+    <p class="cnt-txt">Showing <strong id="cnt">17</strong> of 17 projects</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">EECS 449</div>
+  <p>Conversational AI &nbsp;·&nbsp; University of Michigan &nbsp;·&nbsp; Winter 2026</p>
+</footer>
+
+<script>
+const GH   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 12 6.8c1.02.01 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>`;
+const LIVE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+
+function youtubeId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function driveEmbedUrl(url) {
+  const m = url.match(/\/d\/([^/]+)/);
+  return m ? `https://drive.google.com/file/d/${m[1]}/preview` : null;
+}
+
+const PROJECTS = [
+  {
+    team: "MaizeMind", name: "MaizeMind",
+    desc: "A visual reasoning tool that creates a graph of an argument complete with claims, evidence, and reasoning. Build off different nodes and connect information to explore complex ideas visually.",
+    members: ["kelmegan", "lyras", "himaya", "justmin", "kaelynl"],
+    repo: "https://github.com/kelmegan/maizemind-juncture",
+    demo: { url: "https://drive.google.com/file/d/1pM3xXK0HfE4KdOHwB7ozztQUWIxW6NC-/view", type: "drive" },
+    liveUrl: "https://www.maizemind.com/",
+  },
+  {
+    team: "The Finance Bros", name: "EdgeCast",
+    desc: "A clean MVP that helps users discover active Kalshi prediction markets, inspect price action, and ask an AI analyst for a YES/NO lean with confidence score and rationale.",
+    members: ["amitabhk", "micrubin", "zhengkex", "zywangg"],
+    repo: null,
+    demo: { url: "https://www.youtube.com/watch?v=TyPN8ViaIOI", type: "youtube" },
+    liveUrl: "http://www.edgecastapp.com/",
+  },
+  {
+    team: "Skooch", name: "Skooch",
+    desc: "An AI-powered dynamic scheduler that optimizes your schedule to your capabilities. Automatically plans tasks, homework, social events, and more, catered to your energy level and work style preferences.",
+    members: ["kaiye", "ssolaiya", "dilkhan", "rthav", "zshuai"],
+    repo: null,
+    demo: null,
+    liveUrl: "https://www.skooch.ai/",
+  },
+  {
+    team: "Davids and Goliath", name: "portAI",
+    desc: "Simplifying NCAA transfer portal data and powering analytics & insights with an AI agent. Helps athletes and coaches navigate transfer portal decisions with data-driven intelligence and natural language queries.",
+    members: ["bankowsc", "davidyao", "smitd", "madcoe", "kwestman"],
+    repo: "https://github.com/bankowsc/PortAI",
+    demo: { url: "https://www.youtube.com/watch?v=ppkHVHOR12w&feature=youtu.be", type: "youtube" },
+    liveUrl: null,
+  },
+  {
+    team: "AI4careers", name: "AI4careers",
+    desc: "An AI-powered assistant that helps students navigate job applications and career fairs by optimizing resumes, matching roles to individual profiles, and generating tailored recruiter talking points in real time.",
+    members: ["yishan", "maxreid", "zicong", "shugeoy", "zhanhaol"],
+    repo: "https://github.com/YuzhangMei/AI4Careers",
+    demo: { url: "https://drive.google.com/file/d/1Pom22VWcbC5nhvKJJZkEfNFAfF76nR6z/view?usp=drive_link", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "TrailBlazers", name: "TrailBlazers",
+    desc: "A full-stack conversational agent that automates travel itinerary planning for U.S. national parks. Manages complex state transitions and retrieves real-time trail and park data via the National Park Service (NPS) API.",
+    members: ["gruohan", "cqlu", "yikuny", "mysun"],
+    repo: null,
+    demo: { url: "https://drive.google.com/file/d/16CQwXoD8bFzZSyR4KzGC_LkoJYBfe7ms/view?usp=drive_link", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "The Intelligent Interviewers", name: "The Intelligent Interviewers",
+    desc: "Upload a video response to a behavioral or technical interview question and receive detailed AI feedback. Also provides resume feedback and tracks past responses to give tailored, progressive coaching over time.",
+    members: ["raki", "shreyanp", "ichardt", "tawseefr", "chayton"],
+    repo: null,
+    demo: { url: "https://drive.google.com/file/d/1HRtsEp847Xl0tREpWr0Xu0WZ6BnnOnRg/view", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "CaloReceipt", name: "CaloReceipt",
+    desc: "An app that helps users plan recipes based on grocery receipt uploads and fitness goals. AI-powered capabilities include recipe planning, macro counting, and a rating interface that continuously improves recommendations.",
+    members: ["andrm", "lwhelton", "tesshmck", "jinfeld"],
+    repo: "https://github.com/JInfeld/CaloReceipt",
+    demo: { url: "https://drive.google.com/file/d/1ooVJJ1hrPg-oMAhHQf6m969LRHQSlBI1/view?usp=sharing", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "Dinner Buddy", name: "Dinner Buddy",
+    desc: "Take a photo of what's in your fridge, tell it what you feel like eating, and get a recipe you'll actually make. Powered by Qwen3-VL-32B for image analysis and a per-user profile that updates itself after each meal.",
+    members: ["haoyangw", "yeszhong", "ruijiezh", "laluluya", "yfchou"],
+    repo: "https://github.com/ZhongYeah1/449proj",
+    demo: null,
+    liveUrl: null,
+  },
+  {
+    team: "Value Hunters", name: "Price Comparator",
+    desc: "Uses nearby store locations to find the cheapest price for any product you need. Powered by AI-enhanced search and real-time pricing intelligence across multiple local retailers.",
+    members: ["vjude", "sbollu", "aksheetd", "qingshen"],
+    repo: "https://github.com/verjude/EECS449_Project",
+    demo: null,
+    liveUrl: null,
+  },
+  {
+    team: "Ringtail", name: "Ringtail",
+    desc: "An AI-powered Python code optimizer and validator that analyzes, refactors, and validates code quality, helping developers write cleaner, more efficient, and more correct Python.",
+    members: ["cogo", "gianmarc", "lbues", "shivac", "juliwhit"],
+    repo: "https://github.com/Team-Ringtail/ringtail",
+    demo: { url: "https://drive.google.com/file/d/1BzJ8LooDfLGgit5g8_04VI9qNcayCS9G/view", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "TripLogic", name: "TripLogic",
+    desc: "An AI-powered trip planning application that intelligently organizes your travel itinerary, suggesting activities, accommodations, and optimized routes tailored to your preferences and travel style.",
+    members: ["bradyw", "aplong", "alxswang", "gowda"],
+    repo: "https://github.com/aplong/trip-logic",
+    demo: { url: "https://drive.google.com/file/d/1weXF9V2ZNGuEqxnAIdmcQWvPh6a_colN/view", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "Compas", name: "Compas",
+    desc: "Your all-in-one academic advisor. An AI platform that helps University of Michigan students navigate course selection, degree planning, and academic decisions with personalized, conversational guidance.",
+    members: ["eyz", "dylian", "ruixip", "zfzheng", "tisyam"],
+    repo: null,
+    demo: { url: "https://youtu.be/Flo9Axrolrs?feature=shared", type: "youtube" },
+    liveUrl: "https://umcompas.com/",
+  },
+  {
+    team: "EatSure", name: "EatSure",
+    desc: "Improves in-store shopping by scanning a product to receive information on ingredients, nutrition, allergy warnings, and recall risk. Your AI-powered personal food safety assistant.",
+    members: ["anqidai", "lrx", "yangjii", "renrania", "chengkj"],
+    repo: "https://github.com/yangji-i/VeroEat",
+    demo: { url: "https://drive.google.com/file/d/1Poc6VY0VbBZSvvIR5PgLwsUbp1Yh-uhX/view?usp=sharing", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "AI TetherBot", name: "AI TetherBot",
+    desc: "An AI-powered merge conflict resolver that analyzes conflicting code changes and suggests or automatically applies the best resolution, reducing friction in collaborative Git workflows.",
+    members: ["hoangde", "zionm", "krytt", "anveshag"],
+    repo: "https://github.com/esdorman/Tether",
+    demo: null,
+    liveUrl: null,
+  },
+  {
+    team: "FitForecast", name: "FitForecast",
+    desc: "A hyper-personalized fitness and health app that tracks your progress and delivers AI-driven recommendations. Adapts continuously to your personal health data for actionable, customized guidance.",
+    members: ["doamy", "karnatim", "whruiray", "mumssen"],
+    repo: "https://github.com/Rae9711/FitForcast_app",
+    demo: { url: "https://drive.google.com/file/d/1UtRhHt7D_aqlV6f38N36A1M_yksTwcwx/view?usp=drive_link", type: "drive" },
+    liveUrl: null,
+  },
+  {
+    team: "Tana", name: "Tana",
+    desc: "An open-source macOS overlay that captures your screen context, giving you a voice and text AI assistant that understands what you're looking at. A seamless, context-aware desktop AI companion.",
+    members: ["jmaydan", "junjiaz", "iravel", "smciel"],
+    repo: null,
+    demo: { url: "https://drive.google.com/file/d/10IIrd2AqSuBQ-EEIrR5kD36G2pmhkDiA/view?usp=sharing", type: "drive" },
+    liveUrl: null,
+  },
+];
+
+function makeCard(p, i) {
+  let videoSection;
+  if (!p.demo) {
+    videoSection = `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+  } else if (p.demo.type === 'youtube') {
+    const vid = youtubeId(p.demo.url);
+    videoSection = vid
+      ? `<a href="${p.demo.url}" target="_blank" rel="noopener" class="yt-thumb">
+           <img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Demo video thumbnail" loading="lazy">
+           <span class="yt-play"><svg viewBox="0 0 24 24" fill="white" width="48" height="48"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/><path d="M10 8l6 4-6 4V8z"/></svg></span>
+         </a>`
+      : `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+  } else {
+    const embedSrc = driveEmbedUrl(p.demo.url);
+    videoSection = embedSrc
+      ? `<div class="video-wrap"><iframe src="${embedSrc}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+      : `<div class="video-placeholder"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5V8.5z"/></svg><span>Demo video coming soon</span></div></div>`;
+  }
+  return `
+  <div class="card" style="animation-delay:${i * 40}ms">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <h3 class="pname">${p.name}</h3>
+      <p class="desc">${p.desc}</p>
+      <p class="members-label">Team Members</p>
+      <div class="members">${p.members.map(m => `<div class="avatar">${m.slice(0,2).toUpperCase()}<div class="avatar-tip">${m}@umich.edu</div></div>`).join('')}</div>
+    </div>
+    ${videoSection}
+    <div class="card-foot">
+      ${p.liveUrl ? `<a href="${p.liveUrl}" target="_blank" rel="noopener" class="btn b-live">${LIVE} Live App</a>` : ''}
+      ${p.repo    ? `<a href="${p.repo}"    target="_blank" rel="noopener" class="btn b-gh">${GH} GitHub</a>` : ''}
+    </div>
+  </div>`;
+}
+
+let srch = '';
+
+function render() {
+  let list = PROJECTS;
+  if (srch) {
+    const q = srch.toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.team.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q)
+    );
+  }
+  document.getElementById('cnt').textContent = list.length;
+  document.getElementById('grid').innerHTML = list.length
+    ? list.map((p, i) => makeCard(p, i)).join('')
+    : `<div class="empty"><div class="empty-icon">🔍</div><h3>No projects found</h3><p>Try a different search term.</p></div>`;
+}
+
+document.getElementById('search').addEventListener('input', e => { srch = e.target.value.trim(); render(); });
+render();
+</script>
+</body>
+</html>
